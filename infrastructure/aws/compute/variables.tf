@@ -8,17 +8,17 @@ variable "aws_amis" {
 
 variable "instance_count" {
   description = "Number of EC2 instances being created initially"
-  default = 2
+  default = 3
 }
 
 variable "min_instance_count" {
   description = "Minimum number of EC2 instances in the Auto Scaling group"
-  default = 2
+  default = 1
 }
 
 variable "max_instance_count" {
   description = "Maximum number of EC2 instances in the Auto Scaling group"
-  default = 5
+  default = 6
 }
 
 variable "instance_type" {
@@ -28,13 +28,11 @@ variable "instance_type" {
 
 variable "region" {}
 
+variable "azs" {}
+
 variable "vpc" {}
 
-variable "ec2_subnets" {
-  type = "list"
-}
-
-variable "elb_subnets" {
+variable "private_subnets" {
   type = "list"
 }
 

@@ -16,19 +16,24 @@ variable "sqs_cidr" {
   type = "string"
 }
 
-variable "ec2_cidrs" {
+variable "private_subnet_cidrs" {
   description = "CIDR list for EC2 instances private subnets"
   default = [
     "10.0.2.0/24",
-    "10.0.3.0/24"
+    "10.0.3.0/24",
+    "10.0.4.0/24"
   ]
   type = "list"
 }
 
-variable "elb_cidrs" {
+variable "public_subnet_cidrs" {
   description = "CIDR list for ELB public subnets"  
   default = [
-    "10.0.4.0/24",
-    "10.0.5.0/24"
+    "10.0.5.0/24",
+    "10.0.6.0/24",
+    "10.0.7.0/24"
   ]
+  type = "list"
 }
+
+variable "azs" {}
