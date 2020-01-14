@@ -1,25 +1,31 @@
-module "web_asg" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-
-  name = "web-asg-with-elb"
-
-  # Launch configuration
-  lc_name = "web_launch_conf"
-
+resource "aws_launch_configuration" "web_asg_lc" {
   image_id = "${lookup(var.aws_amis, var.region)}"
   instance_type = "${var.instance_type}"
   security_groups = ["${aws_security_group.instance.id}"]
+  user_data = "${file("compute/userdata.sh")}"
+  lifecycle {
+    # prevent timeout
+    create_before_destroy = true
+  }
+}
 
-  load_balancers = ["${module.elb.this_elb_id}"]
 
-  # Auto scaling group
-  asg_name = "web-asg"
-  vpc_zone_identifier = "${var.ec2_subnets}"
-  health_check_type = "ELB"
-  
-  min_size = "${var.min_instance_count}"
-  max_size ="${var.max_instance_count}"
+resource "aws_autoscaling_group" "web_asg" {
+  name = "web-asg"
+  launch_configuration = "${aws_launch_configuration.web_asg_lc.id}"
+
+  vpc_zone_identifier = "${var.private_subnets}"
+  target_group_arns = ["${aws_alb_target_group.web_alb_tg.arn}"]
+
   desired_capacity = "${var.instance_count}"
-  wait_for_capacity_timeout = 0
-  
+  max_size = "${var.max_instance_count}"
+  min_size = "${var.min_instance_count}"
+
+  health_check_type = "ELB"
+  tag {
+    key = "Name"
+    value = "web-asg"
+    propagate_at_launch = true
+  }
+
 }

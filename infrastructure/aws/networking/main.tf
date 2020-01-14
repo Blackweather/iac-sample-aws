@@ -16,21 +16,28 @@ resource "aws_internet_gateway" "tf_internet_gateway" {
   }
 }
 
-data "aws_availability_zones" "available" {}
 # Private subnets for launched EC2 instances
-resource "aws_subnet" "private_ec2_subnet" {
-  count                   = 2
-  vpc_id                  = "${aws_vpc.host_vpc.id}"
-  cidr_block              = "${var.ec2_cidrs[count.index]}"
-  availability_zone       = "${data.aws_availability_zones.available.names[count.index]}"
+resource "aws_subnet" "private_subnet" {
+  count             = "${length(var.azs)}"
+  vpc_id            = "${aws_vpc.host_vpc.id}"
+  cidr_block        = "${element(var.private_subnet_cidrs, count.index)}"
+  availability_zone = "${element(var.azs, count.index)}"
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "private-subnet-${count.index}"
+  }
 }
 
-resource "aws_subnet" "public_elb_subnet" {
-  count                   = 2
+# Public subnet for LB access
+resource "aws_subnet" "public_subnet" {
+  count                   = "${length(var.azs)}"
   vpc_id                  = "${aws_vpc.host_vpc.id}"
-  cidr_block              = "${var.elb_cidrs[count.index]}"
-  availability_zone       = "${data.aws_availability_zones.available.names[count.index]}"
+  cidr_block              = "${element(var.public_subnet_cidrs, count.index)}"
+  availability_zone       = "${element(var.azs, count.index)}"
   map_public_ip_on_launch = true
+  tags = {
+    Name = "public-subnet-${count.index}"
+  }
 }
 
 # Private subnet for RDS
@@ -49,7 +56,7 @@ resource "aws_subnet" "private_sqs_subnet" {
   availability_zone       = "us-east-1a"
 }
 
-
+# main route table
 resource "aws_route_table" "public_rt" {
   vpc_id = "${aws_vpc.host_vpc.id}"
 
@@ -63,24 +70,45 @@ resource "aws_route_table" "public_rt" {
   }
 }
 
-resource "aws_route_table_association" "public_rt_assoc_elb" {
-  count          = "${length(aws_subnet.public_elb_subnet)}"
-  subnet_id      = "${aws_subnet.public_elb_subnet.*.id[count.index]}"
+# associate route table with VPC
+resource "aws_main_route_table_association" "public" {
+  vpc_id         = "${aws_vpc.host_vpc.id}"
   route_table_id = "${aws_route_table.public_rt.id}"
 }
 
-
-
-resource "aws_default_route_table" "private_rt" {
-  default_route_table_id = "${aws_vpc.host_vpc.default_route_table_id}"
-
-  tags = {
-    Name = "private_rt"
-  }
+# associate public subnets with route table
+resource "aws_route_table_association" "public" {
+  count          = "${length(var.azs)}"
+  subnet_id      = "${element(aws_subnet.public_subnet.*.id, count.index)}"
+  route_table_id = "${aws_route_table.public_rt.id}"
 }
 
-resource "aws_route_table_association" "private_rt_assoc_ec2" {
-  count          = "${length(aws_subnet.private_ec2_subnet)}"
-  subnet_id      = "${aws_subnet.private_ec2_subnet.*.id[count.index]}"
-  route_table_id = "${aws_default_route_table.private_rt.id}"
+# EIP for NAT Gateway
+resource "aws_eip" "eip" {
+  count = "${length(var.azs)}"
+  vpc = true
+  depends_on = ["aws_internet_gateway.tf_internet_gateway"]
+}
+
+# create NAT Gateways
+resource "aws_nat_gateway" "nat_gw" {
+  count = "${length(var.azs)}"
+  allocation_id = "${element(aws_eip.eip.*.id, count.index)}"
+  subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
+  depends_on = ["aws_internet_gateway.tf_internet_gateway"]
+}
+
+# private route table for each private subnet
+resource "aws_route_table" "private_rt" {
+  vpc_id = "${aws_vpc.host_vpc.id}"
+  count = "${length(var.azs)}"
+  
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = "${element(aws_nat_gateway.nat_gw.*.id, count.index)}"
+  }
+
+  tags = {
+    Name = "private-subnet-rt-${count.index}"
+  }
 }

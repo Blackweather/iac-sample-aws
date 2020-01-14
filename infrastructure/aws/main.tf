@@ -1,7 +1,7 @@
 terraform {
   required_version = "~> 0.12.19"
 
-  # not viable for this task due to name uniqueness
+  # not viable right now due to name uniqueness
   # backend "s3" {
   #     bucket = "company-terraform"
   #     key = "terraform.tfstate"
@@ -14,15 +14,16 @@ provider "aws" {
   region  = "${var.region}"
 }
 module "compute" {
-  source = "./compute"
-  region = "${var.region}"
-  vpc    = "${module.networking.host_vpc}"
-  ec2_subnets = "${module.networking.ec2_subnets}"
-  elb_subnets = "${module.networking.elb_subnets}"
+  source                = "./compute"
+  region                = "${var.region}"
+  azs                   = "${var.azs}"
+  vpc                   = "${module.networking.host_vpc}"
+  private_subnets       = "${module.networking.private_subnets}"
 }
 
 module "networking" {
-  source    = "./networking"
+  source = "./networking"
+  azs    = "${var.azs}"
 }
 
 module "database" {
