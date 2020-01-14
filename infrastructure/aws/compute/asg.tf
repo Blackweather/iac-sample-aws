@@ -1,6 +1,5 @@
 module "web_asg" {
-  source  = "terraform-aws-modules/autoscaling/aws//examples/asg_elb"
-  version = "2.5.1"
+  source  = "terraform-aws-modules/autoscaling/aws"
 
   name = "web-asg-with-elb"
 
@@ -15,8 +14,8 @@ module "web_asg" {
 
   # Auto scaling group
   asg_name = "web-asg"
-  #vpc_zone_identifier = "" //??
-  health_check_type = "EC2"
+  vpc_zone_identifier = "${var.ec2_subnets}"
+  health_check_type = "ELB"
   
   min_size = "${var.min_instance_count}"
   max_size ="${var.max_instance_count}"

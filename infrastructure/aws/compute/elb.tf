@@ -27,16 +27,12 @@ module "elb" {
 
   name = "web-elb"
 
-  subnets = [
-    "${var.ec2_subnets[0]}",
-    "${var.ec2_subnets[1]}",
-    "${var.ec2_subnets[2]}",
-    "${var.ec2_subnets[3]}",
-    "${var.ec2_subnets[4]}",
-  ]
+  subnets = "${var.elb_subnets}"
 
   security_groups = ["${aws_security_group.elb.id}"]
   internal        = false
+
+  cross_zone_load_balancing = true
 
   listener = [
     {
@@ -47,8 +43,7 @@ module "elb" {
     },
   ]
 
-  health_check = [
-    {
+  health_check = {
       healthy_threshold   = 2
       unhealthy_threshold = 2
       timeout             = 3
@@ -56,8 +51,8 @@ module "elb" {
       # can be later switched to /health endpoint
       target   = "HTTP:80/"
       interval = 30
-    },
-  ]
+  }
+  
 }
 
 # set up sticky sessions for ELB

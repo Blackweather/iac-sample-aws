@@ -33,3 +33,8 @@ variable "vpc" {}
 variable "ec2_subnets" {
   type = "list"
 }
+
+variable "elb_subnets" {
+  type = "list"
+}
+

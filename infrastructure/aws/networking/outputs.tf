@@ -3,7 +3,11 @@ output "host_vpc" {
 }
 
 output "ec2_subnets" {
-  value = "${aws_subnet.public_ec2_subnet.*.id}"
+  value = "${aws_subnet.private_ec2_subnet.*.id}"
+}
+
+output "elb_subnets" {
+  value = "${aws_subnet.public_elb_subnet.*.id}"
 }
 
 output "rds_subnet" {
@@ -12,8 +16,4 @@ output "rds_subnet" {
 
 output "sqs_subnet" {
   value = "${aws_subnet.private_sqs_subnet.id}"
-}
-
-output "ec2_subnet_ips" {
-  value = "${aws_subnet.public_ec2_subnet.*.cidr_block}"
 }

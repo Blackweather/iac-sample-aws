@@ -18,14 +18,11 @@ module "compute" {
   region = "${var.region}"
   vpc    = "${module.networking.host_vpc}"
   ec2_subnets = "${module.networking.ec2_subnets}"
+  elb_subnets = "${module.networking.elb_subnets}"
 }
 
 module "networking" {
   source    = "./networking"
-  vpc_cidr  = "${var.vpc_cidr}"
-  rds_cidr  = "${var.rds_cidr}"
-  sqs_cidr  = "${var.sqs_cidr}"
-  ec2_cidrs = "${var.ec2_cidrs}"
 }
 
 module "database" {
