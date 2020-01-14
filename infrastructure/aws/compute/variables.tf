@@ -1,8 +1,3 @@
-variable "name" {
-  description = "Name of EC2 instance cluster"
-  default = "my_cluster"
-}
-
 # Ubuntu Canonical 18.04 LTS
 variable "aws_amis" {
   description = "Suggested AMIs for Web Servers depending on the region"

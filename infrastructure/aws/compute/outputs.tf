@@ -1,11 +1,14 @@
-output "instance_ids" {
-  value = "${join(", ", aws_instance.web.*.id)}"
+output "this_launch_configuration_id" {
+  description = "The ID of the launch configuration"
+  value       = "${module.web_asg.this_launch_configuration_id}"
 }
 
-output "instance_ips" {
-  value = "${aws_instance.web.*.public_ip}"
+output "this_autoscaling_group_id" {
+  description = "The autoscaling group id"
+  value       = "${module.web_asg.this_autoscaling_group_id}"
 }
 
-output "elb_dns_name" {
-  value = "${aws_elb.web.dns_name}"
+output "this_elb_dns_name" {
+  description = "DNS name of the ELB"
+  value       = "${module.elb.this_elb_dns_name}"
 }
