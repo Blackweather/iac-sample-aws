@@ -13,7 +13,3 @@ output "public_subnets" {
 output "rds_subnets" {
   value = "${aws_subnet.private_rds_subnet.*.id}"
 }
-
-output "sqs_subnet" {
-  value = "${aws_subnet.private_sqs_subnet.id}"
-}
