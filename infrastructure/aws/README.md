@@ -26,8 +26,7 @@ This subdirectory contains code for infrastructure deployed with AWS.
 ### Deployed infrastructure
 - Networking module:
     - defines VPC and subnets for all used services (excluding SQS)
-        - 3 public and 3 private subnets for Auto-scaled EC2 instances with ALB (one public and one private for each defined Availability Zone)
-        - 2 private subnets in 2 AZs for RDS database
+        - 3 public and 3 private subnets for Auto-scaled EC2 instances with ALB (one public and one private for each defined Availability Zone) and RDS
     - defines IGW for connection to ALB deployed in VPC
         - defines EIP for IGW
     - defines NAT Gateways and Route Tables for connections
