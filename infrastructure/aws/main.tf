@@ -29,7 +29,7 @@ module "networking" {
 module "database" {
   source      = "./database"
   vpc         = "${module.networking.host_vpc}"
-  rds_subnets = "${module.networking.rds_subnets}"
+  rds_subnets = "${module.networking.private_subnets}"
 }
 
 module "queue" {

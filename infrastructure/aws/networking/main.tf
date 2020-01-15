@@ -40,19 +40,6 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-# Private subnet for RDS
-resource "aws_subnet" "private_rds_subnet" {
-  count                   = "${length(var.rds_cidr)}"
-  vpc_id                  = "${aws_vpc.host_vpc.id}"
-  cidr_block              = "${element(var.rds_cidr, count.index)}"
-  map_public_ip_on_launch = false
-  availability_zone       = "${element(var.azs, count.index)}"
-
-  tags = {
-    Name = "private-rds-subnet-${count.index}"
-  }
-}
-
 # main route table
 resource "aws_route_table" "public_rt" {
   vpc_id = "${aws_vpc.host_vpc.id}"
