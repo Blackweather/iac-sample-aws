@@ -13,12 +13,6 @@ variable "rds_cidr" {
   type = "list"
 }
 
-variable "sqs_cidr" {
-  description = "CIDR for SQS subnet"
-  default = "10.0.8.0/24"
-  type = "string"
-}
-
 variable "private_subnet_cidrs" {
   description = "CIDR list for EC2 instances private subnets"
   default = [

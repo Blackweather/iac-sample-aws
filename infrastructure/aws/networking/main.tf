@@ -53,14 +53,6 @@ resource "aws_subnet" "private_rds_subnet" {
   }
 }
 
-# Private subnet for SQS
-resource "aws_subnet" "private_sqs_subnet" {
-  vpc_id                  = "${aws_vpc.host_vpc.id}"
-  cidr_block              = "${var.sqs_cidr}"
-  map_public_ip_on_launch = false
-  availability_zone       = "us-east-1a"
-}
-
 # main route table
 resource "aws_route_table" "public_rt" {
   vpc_id = "${aws_vpc.host_vpc.id}"
