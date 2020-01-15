@@ -1,4 +1,5 @@
-#aws
+# aws
+
 This subdirectory contains code for infrastructure deployed with AWS.
 
 ## Infrastructure overview

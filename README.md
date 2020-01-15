@@ -3,13 +3,14 @@ Infrastructure as code repository setting up AWS infrastructure.
 
 ## Contents
 ```
-. # Root directory with README and .gitignore
+.                # Root directory with README and .gitignore
 |-infrastructure # general directory for all infrastracture as code
-|--aws # AWS infrastructure as code
-|-sample-app # code for a sample node.js application for deployment (empty)
+|--aws           # AWS infrastructure as code
+|-sample-app     # code for a sample node.js application for deployment (empty)
 ```
 
 To see more information about infrastructure see the `README.md` file in `infrastructure/` subdirectory - (https://github.com/Blackweather/iac-bright/tree/master/infrastructure)
+
 To see more information about AWS infrastructure see the `README.md` file in `infrastructure/aws/` subdirectory - (https://github.com/Blackweather/iac-bright/tree/master/infrastructure/aws)
 
 ## Prerequisites
