@@ -5,14 +5,17 @@ variable "vpc_cidr" {
 }
 
 variable "rds_cidr" {
-  description = "CIDR for RDS subnet"
-  default = "10.0.0.0/24"
-  type = "string"
+  description = "CIDR list for RDS private subnet"
+  default = [
+    "10.0.0.0/24",
+    "10.0.1.0/24"
+  ]
+  type = "list"
 }
 
 variable "sqs_cidr" {
   description = "CIDR for SQS subnet"
-  default = "10.0.1.0/24"
+  default = "10.0.8.0/24"
   type = "string"
 }
 
