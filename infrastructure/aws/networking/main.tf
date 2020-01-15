@@ -18,10 +18,10 @@ resource "aws_internet_gateway" "tf_internet_gateway" {
 
 # Private subnets for launched EC2 instances
 resource "aws_subnet" "private_subnet" {
-  count             = "${length(var.azs)}"
-  vpc_id            = "${aws_vpc.host_vpc.id}"
-  cidr_block        = "${element(var.private_subnet_cidrs, count.index)}"
-  availability_zone = "${element(var.azs, count.index)}"
+  count                   = "${length(var.azs)}"
+  vpc_id                  = "${aws_vpc.host_vpc.id}"
+  cidr_block              = "${element(var.private_subnet_cidrs, count.index)}"
+  availability_zone       = "${element(var.azs, count.index)}"
   map_public_ip_on_launch = true
   tags = {
     Name = "private-subnet-${count.index}"
@@ -42,10 +42,15 @@ resource "aws_subnet" "public_subnet" {
 
 # Private subnet for RDS
 resource "aws_subnet" "private_rds_subnet" {
+  count                   = "${length(var.rds_cidr)}"
   vpc_id                  = "${aws_vpc.host_vpc.id}"
-  cidr_block              = "${var.rds_cidr}"
+  cidr_block              = "${element(var.rds_cidr, count.index)}"
   map_public_ip_on_launch = false
-  availability_zone       = "us-east-1a"
+  availability_zone       = "${element(var.azs, count.index)}"
+
+  tags = {
+    Name = "private-rds-subnet-${count.index}"
+  }
 }
 
 # Private subnet for SQS
@@ -85,26 +90,26 @@ resource "aws_route_table_association" "public" {
 
 # EIP for NAT Gateway
 resource "aws_eip" "eip" {
-  count = "${length(var.azs)}"
-  vpc = true
+  count      = "${length(var.azs)}"
+  vpc        = true
   depends_on = ["aws_internet_gateway.tf_internet_gateway"]
 }
 
 # create NAT Gateways
 resource "aws_nat_gateway" "nat_gw" {
-  count = "${length(var.azs)}"
+  count         = "${length(var.azs)}"
   allocation_id = "${element(aws_eip.eip.*.id, count.index)}"
-  subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
-  depends_on = ["aws_internet_gateway.tf_internet_gateway"]
+  subnet_id     = "${element(aws_subnet.public_subnet.*.id, count.index)}"
+  depends_on    = ["aws_internet_gateway.tf_internet_gateway"]
 }
 
 # private route table for each private subnet
 resource "aws_route_table" "private_rt" {
   vpc_id = "${aws_vpc.host_vpc.id}"
-  count = "${length(var.azs)}"
-  
+  count  = "${length(var.azs)}"
+
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = "${element(aws_nat_gateway.nat_gw.*.id, count.index)}"
   }
 

@@ -14,11 +14,11 @@ provider "aws" {
   region  = "${var.region}"
 }
 module "compute" {
-  source                = "./compute"
-  region                = "${var.region}"
-  azs                   = "${var.azs}"
-  vpc                   = "${module.networking.host_vpc}"
-  private_subnets       = "${module.networking.private_subnets}"
+  source          = "./compute"
+  region          = "${var.region}"
+  azs             = "${var.azs}"
+  vpc             = "${module.networking.host_vpc}"
+  private_subnets = "${module.networking.private_subnets}"
 }
 
 module "networking" {
@@ -27,8 +27,9 @@ module "networking" {
 }
 
 module "database" {
-  source = "./database"
-
+  source      = "./database"
+  vpc         = "${module.networking.host_vpc}"
+  rds_subnets = "${module.networking.rds_subnets}"
 }
 
 module "queue" {

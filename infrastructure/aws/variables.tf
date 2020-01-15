@@ -13,3 +13,13 @@ variable "project_name" {
   default = "iac-aws-terraform"
   type    = "string"
 }
+
+variable "rds_az" {
+  description = "AZ used for RDS"
+  default = "us-east-1a"
+}
+
+variable "sqs_az" {
+  description = "AZ used for SQS"
+  default = "us-east-1a"
+}
