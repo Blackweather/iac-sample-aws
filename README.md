@@ -1,5 +1,6 @@
-# iac-bright
+# iac-sample-aws
 Infrastructure as code repository setting up AWS infrastructure.
+This project is not complete.
 
 ## Contents
 ```
